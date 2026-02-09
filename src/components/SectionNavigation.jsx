@@ -6,13 +6,16 @@ function SectionNavigation({ sections, activeSection, setActiveSection }) {
     setActiveSection(id);
     const element = document.getElementById(id);
     if (element) {
-      const offset = 140; // Fixed header + sticky nav
-      const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - offset;
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth"
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+        inline: 'nearest',
       });
+
+      // Keep URL in sync without navigating/reloading
+      if (window.history?.replaceState) {
+        window.history.replaceState(null, '', `#${id}`);
+      }
     }
   };
 
