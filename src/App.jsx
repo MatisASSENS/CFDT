@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import Layout from '@/components/Layout';
 import NynjaReportPage from '@/pages/NynjaReportPage';
+import InterrogatoireHubertPage from '@/pages/InterrogatoireHubertPage';
+import InterrogatoireMonfredaPage from '@/pages/InterrogatoireMonfredaPage';
 import { Toaster } from '@/components/ui/toaster';
 
 function App() {
@@ -18,6 +20,8 @@ function App() {
           <Routes>
             <Route path="/" element={<NynjaReportPage />} />
             <Route path="/rapport-nynja" element={<NynjaReportPage />} />
+            <Route path="/interrogatoire-hubert" element={<InterrogatoireHubertPage />} />
+            <Route path="/interrogatoire-monfreda" element={<InterrogatoireMonfredaPage />} />
           </Routes>
         </Layout>
         <Toaster />

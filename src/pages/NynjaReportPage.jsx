@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FileText, AlertTriangle, Calendar, Users, Wrench, Thermometer, Clock, Target, Book, Download, AlertCircle, ChevronDown, ChevronUp, Zap, Droplet, Activity, Camera, Map, BarChart } from 'lucide-react';
@@ -13,6 +13,7 @@ import TechnicalDataTable from '@/components/TechnicalDataTable';
 import SystemsAnalysisAccordion from '@/components/SystemsAnalysisAccordion';
 import PhotoGallery from '@/components/PhotoGallery';
 import SectionNavigation from '@/components/SectionNavigation';
+import { Link } from 'react-router-dom';
 function NynjaReportPage() {
   const {
     toast
@@ -24,7 +25,14 @@ function NynjaReportPage() {
       description: "Le rapport complet (PDF) est en cours de génération..."
     });
   };
-  const sections = [{
+
+  const baseUrl = import.meta.env.BASE_URL || '/';
+  const withBase = (path) => {
+    const normalizedBase = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
+    const normalizedPath = path.startsWith('/') ? path.slice(1) : path;
+    return `${normalizedBase}${normalizedPath}`;
+  };
+  const sections = useMemo(() => ([{
     id: 'summary',
     label: 'Résumé',
     icon: FileText
@@ -60,7 +68,50 @@ function NynjaReportPage() {
     id: 'documents',
     label: 'Documents',
     icon: Book
-  }];
+  }]), []);
+
+  const scrollSpyRafRef = useRef(null);
+  useEffect(() => {
+    const offset = 140;
+    const sectionIds = sections.map((s) => s.id);
+
+    const computeActiveSection = () => {
+      const scrollPosition = window.scrollY + offset;
+      let currentSectionId = sectionIds[0];
+
+      for (const id of sectionIds) {
+        const element = document.getElementById(id);
+        if (!element) continue;
+
+        if (element.offsetTop <= scrollPosition) {
+          currentSectionId = id;
+        }
+      }
+
+      setActiveSection((prev) => (prev === currentSectionId ? prev : currentSectionId));
+    };
+
+    const onScroll = () => {
+      if (scrollSpyRafRef.current) return;
+      scrollSpyRafRef.current = window.requestAnimationFrame(() => {
+        scrollSpyRafRef.current = null;
+        computeActiveSection();
+      });
+    };
+
+    computeActiveSection();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      if (scrollSpyRafRef.current) {
+        window.cancelAnimationFrame(scrollSpyRafRef.current);
+        scrollSpyRafRef.current = null;
+      }
+    };
+  }, [sections]);
 
   const victims = [
     {
@@ -107,11 +158,13 @@ function NynjaReportPage() {
   const interrogationDocs = {
     hubert: {
       label: 'Interrogatoire Hubert (DOCX)',
-      href: '/documents/Interrogatoire%20Hubert.docx',
+      href: withBase('documents/Interrogatoire%20Hubert.docx'),
+      pagePath: '/interrogatoire-hubert',
     },
     monfreda: {
       label: 'Interrogatoire Monfreda (DOCX)',
-      href: '/documents/Interrogatoire%20Monfreda.docx',
+      href: withBase('documents/Interrogatoire%20Monfreda.docx'),
+      pagePath: '/interrogatoire-monfreda',
     },
   };
 
@@ -119,6 +172,7 @@ function NynjaReportPage() {
     {
       title: 'Interrogatoire Hubert',
       doc: interrogationDocs.hubert,
+      photo: withBase('documents/hubert.jpeg'),
       keyPoints: [
         "Le témoin indique que M. Monfreda parlait beaucoup de l’aéroclub auparavant, mais plus depuis octobre.",
         "La date exacte du départ de M. Monfreda n’est pas connue du témoin; seulement que c’était avant le crash.",
@@ -127,8 +181,9 @@ function NynjaReportPage() {
       ],
     },
     {
-      title: 'Interrogatoire Monfreda',
+      title: 'Interrogatoire Flavien Monfreda',
       doc: interrogationDocs.monfreda,
+      photo: withBase('documents/Monfredat.jpeg'),
       keyPoints: [
         "M. Monfreda affirme avoir quitté l’aéroclub il y a ~4 mois (avant le crash d’octobre 2025).",
         "Il décrit des tensions et un problème de manque de formation chez la personne ayant repris la direction.",
@@ -139,22 +194,22 @@ function NynjaReportPage() {
   ];
 
   const reportDocuments = [
-    { label: '190-03103-00_b.pdf', href: '/documents/190-03103-00_b.pdf' },
-    { label: '4X-ONA_02-05-2015.jpg', href: '/documents/4X-ONA_02-05-2015.jpg' },
-    { label: 'Données_BE2.pdf', href: '/documents/Donn%C3%A9es_BE2.pdf' },
-    { label: 'FlavienMonfreda (1).mp3', href: '/documents/FlavienMonfreda%20(1).mp3' },
-    { label: 'FlavienMonfreda.mp3', href: '/documents/FlavienMonfreda.mp3' },
+    { label: '190-03103-00_b.pdf', href: withBase('documents/190-03103-00_b.pdf') },
+    { label: '4X-ONA_02-05-2015.jpg', href: withBase('documents/4X-ONA_02-05-2015.jpg') },
+    { label: 'Données_BE2.pdf', href: withBase('documents/Donn%C3%A9es_BE2.pdf') },
+    { label: 'FlavienMonfreda (1).mp3', href: withBase('documents/FlavienMonfreda%20(1).mp3') },
+    { label: 'FlavienMonfreda.mp3', href: withBase('documents/FlavienMonfreda.mp3') },
     { label: 'Interrogatoire Hubert.docx', href: interrogationDocs.hubert.href },
     { label: 'Interrogatoire Monfreda.docx', href: interrogationDocs.monfreda.href },
-    { label: 'La Dépêche de Quatorze Heures.pdf', href: '/documents/La%20D%C3%A9p%C3%AAche%20de%20Quatorze%20Heures.pdf' },
-    { label: 'LFBA.pdf', href: '/documents/LFBA.pdf' },
-    { label: 'miac1_agen_lfba (1).pdf', href: '/documents/miac1_agen_lfba%20(1).pdf' },
-    { label: 'miac1_agen_lfba (2).pdf', href: '/documents/miac1_agen_lfba%20(2).pdf' },
-    { label: 'Rapport scéance 1.docx', href: '/documents/Rapport%20sc%C3%A9ance%201.docx' },
-    { label: 'image.png', href: '/documents/image.png' },
-    { label: 'imazdge.png', href: '/documents/imazdge.png' },
-    { label: 'imefefeage.png', href: '/documents/imefefeage.png' },
-    { label: 'imefefeage2.png', href: '/documents/imefefeage2.png' },
+    { label: 'La Dépêche de Quatorze Heures.pdf', href: withBase('documents/La%20D%C3%A9p%C3%AAche%20de%20Quatorze%20Heures.pdf') },
+    { label: 'LFBA.pdf', href: withBase('documents/LFBA.pdf') },
+    { label: 'miac1_agen_lfba (1).pdf', href: withBase('documents/miac1_agen_lfba%20(1).pdf') },
+    { label: 'miac1_agen_lfba (2).pdf', href: withBase('documents/miac1_agen_lfba%20(2).pdf') },
+    { label: 'Rapport scéance 1.docx', href: withBase('documents/Rapport%20sc%C3%A9ance%201.docx') },
+    { label: 'image.png', href: withBase('documents/image.png') },
+    { label: 'imazdge.png', href: withBase('documents/imazdge.png') },
+    { label: 'imefefeage.png', href: withBase('documents/imefefeage.png') },
+    { label: 'imefefeage2.png', href: withBase('documents/imefefeage2.png') },
   ];
   const fadeIn = {
     initial: {
@@ -420,9 +475,19 @@ function NynjaReportPage() {
               {interviewsReport.map((interview) => (
                 <div key={interview.title} className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
                   <div className="flex items-start justify-between gap-4">
-                    <div>
+                    <div className="flex items-start gap-4">
+                      <div className="w-14 h-14 rounded-full overflow-hidden border border-gray-200 bg-gray-100 flex-shrink-0">
+                        <img
+                          src={interview.photo}
+                          alt={interview.title}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                      </div>
+                      <div>
                       <h3 className="text-xl font-bold text-gray-900">{interview.title}</h3>
                       <p className="text-sm text-gray-500 mt-1">Document source: {interview.doc.label}</p>
+                      </div>
                     </div>
                     <a
                       className="inline-flex"
@@ -430,10 +495,16 @@ function NynjaReportPage() {
                       target="_blank"
                       rel="noreferrer"
                     >
-                      <Button className="bg-[#000091] hover:bg-[#000091]/90 text-white">
-                        <Download size={18} className="mr-2" /> Ouvrir
-                      </Button>
+                      <Button variant="outline">DOCX</Button>
                     </a>
+                  </div>
+
+                  <div className="mt-4">
+                    <Link to={interview.doc.pagePath}>
+                      <Button className="bg-[#000091] hover:bg-[#000091]/90 text-white w-full">
+                        Lire l’interrogatoire complet
+                      </Button>
+                    </Link>
                   </div>
 
                   <div className="mt-5">

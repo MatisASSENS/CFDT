@@ -5,22 +5,29 @@ import { X, ZoomIn } from 'lucide-react';
 function PhotoGallery() {
   const [selectedImage, setSelectedImage] = useState(null);
 
+  const baseUrl = import.meta.env.BASE_URL || '/';
+  const withBase = (path) => {
+    const normalizedBase = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
+    const normalizedPath = path.startsWith('/') ? path.slice(1) : path;
+    return `${normalizedBase}${normalizedPath}`;
+  };
+
   const images = [
     {
-      url: 'https://images.unsplash.com/photo-1559579449-ff779f875e1a',
-      caption: 'Vue générale de l\'aéronef similaire'
+      url: withBase('documents/4X-ONA_02-05-2015.jpg'),
+      caption: 'Photographie - appareil (archive)'
     },
     {
-      url: 'https://images.unsplash.com/photo-1699888621354-8b26bf229524',
-      caption: 'Détail compartiment moteur Rotax 912'
+      url: withBase('documents/image.png'),
+      caption: 'Photo d\'investigation (1)'
     },
     {
-      url: 'https://images.unsplash.com/photo-1537507438480-b802c3777ea7',
-      caption: 'Environnement aérodrome LFBA'
+      url: withBase('documents/imazdge.png'),
+      caption: 'Photo d\'investigation (2)'
     },
     {
-      url: 'https://images.unsplash.com/photo-1590196771037-c355ce575028',
-      caption: 'Inspection structurelle'
+      url: withBase('documents/imefefeage.png'),
+      caption: 'Photo d\'investigation (3)'
     }
   ];
 

@@ -6,7 +6,7 @@ function SectionNavigation({ sections, activeSection, setActiveSection }) {
     setActiveSection(id);
     const element = document.getElementById(id);
     if (element) {
-      const offset = 80; // Adjust for sticky header
+      const offset = 140; // Fixed header + sticky nav
       const elementPosition = element.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - offset;
       window.scrollTo({
