@@ -52,7 +52,55 @@ function NynjaReportPage() {
     id: 'media',
     label: 'Médias',
     icon: Camera
+  }, {
+    id: 'documents',
+    label: 'Documents',
+    icon: Book
   }];
+
+  const victims = [
+    {
+      name: 'Jean Dupotager',
+      performedAt: "Réalisée le 27 octobre 2025 par Timothée Chalumeau, CHU d'Agen",
+      timeOfDeath: '16h00 approx.',
+      age: '30 ans',
+      findings: [
+        "Choc important. Rupture de la boite crânienne.",
+        'Ruptures des cervicales.',
+        'Perforation des organes.',
+      ],
+      toxicology: [
+        'Analyse de sang : Pas de trace de stupéfiants. Pas de trace d’alcool.',
+        'Analyse gastrique : Normale.',
+        'Taux de glycémie : Normal.',
+      ],
+      conclusion: 'Décès causé par le choc subi lors de l’accident.',
+    },
+    {
+      name: 'Alexandre Lamitié',
+      performedAt: "Réalisée le 27 octobre 2025 par Timothée Chalumeau, CHU d'Agen",
+      timeOfDeath: '16h00 approx.',
+      age: '28 ans',
+      findings: [
+        "Choc important. Rupture de la boite crânienne.",
+        'Ruptures des cervicales.',
+        'Perforation des organes.',
+      ],
+      toxicology: [
+        'Analyse de sang : Pas de trace de stupéfiants. Pas de trace d’alcool.',
+        'Analyse gastrique : Normale.',
+        'Taux de glycémie : Normal.',
+      ],
+      conclusion: 'Décès causé par le choc subi lors de l’accident.',
+    },
+  ];
+
+  const maintenanceNotes = [
+    "Tâches de maintenance non effectuées depuis le départ de F. MONFREDA.",
+    "Problème connu d’anguille (crépine d’aspiration) / jauge essence défectueuse.",
+  ];
+
+  const reportDocuments = [];
   const fadeIn = {
     initial: {
       opacity: 0,
@@ -180,6 +228,59 @@ function NynjaReportPage() {
                     </ul>
                   </div>
                 </div>
+
+                <div className="mt-12 grid lg:grid-cols-3 gap-6">
+                  <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                    <h3 className="text-[#000091] font-bold mb-4 flex items-center">
+                      <Book className="mr-2" size={20} /> Constatations médico-légales (fictif)
+                    </h3>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      {victims.map((victim) => (
+                        <div key={victim.name} className="bg-gray-50 rounded-xl border border-gray-100 p-5">
+                          <div className="font-bold text-gray-900 text-lg">{victim.name}</div>
+                          <div className="text-sm text-gray-600 mt-1">{victim.performedAt}</div>
+                          <div className="mt-3 text-sm text-gray-700">
+                            <div><span className="font-semibold">Heure du décès :</span> {victim.timeOfDeath}</div>
+                            <div><span className="font-semibold">Âge :</span> {victim.age}</div>
+                          </div>
+                          <div className="mt-3">
+                            <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Chocs corporels</div>
+                            <ul className="text-sm text-gray-700 list-disc ml-5 space-y-1">
+                              {victim.findings.map((line, idx) => (
+                                <li key={idx}>{line}</li>
+                              ))}
+                            </ul>
+                          </div>
+                          <div className="mt-3">
+                            <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Analyses</div>
+                            <ul className="text-sm text-gray-700 list-disc ml-5 space-y-1">
+                              {victim.toxicology.map((line, idx) => (
+                                <li key={idx}>{line}</li>
+                              ))}
+                            </ul>
+                          </div>
+                          <div className="mt-3 text-sm text-gray-800 font-semibold">
+                            Conclusion : <span className="font-normal">{victim.conclusion}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                    <h3 className="text-[#000091] font-bold mb-4 flex items-center">
+                      <Wrench className="mr-2" size={20} /> Maintenance (notes)
+                    </h3>
+                    <ul className="text-sm text-gray-700 list-disc ml-5 space-y-2">
+                      {maintenanceNotes.map((note, idx) => (
+                        <li key={idx}>{note}</li>
+                      ))}
+                    </ul>
+                    <div className="mt-6 text-xs text-gray-500 italic">
+                      Ces éléments alimentent l’analyse mais ne constituent pas une attribution de responsabilités.
+                    </div>
+                  </div>
+                </div>
               </div>
             </motion.div>
           </section>
@@ -276,6 +377,31 @@ function NynjaReportPage() {
               <p className="text-gray-500 mt-1">Clichés techniques et environnementaux</p>
             </div>
             <PhotoGallery />
+          </section>
+
+          {/* SECTION: DOCUMENTS */}
+          <section id="documents" className="scroll-mt-32">
+            <div className="mb-8 pl-4 border-l-4 border-[#E1000F]">
+              <h2 className="text-3xl font-bold text-gray-900">Documents</h2>
+              <p className="text-gray-500 mt-1">Dossier statique: <span className="font-mono">public/documents</span></p>
+            </div>
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+              {reportDocuments.length === 0 ? (
+                <div className="text-gray-600">
+                  Aucun document n’est encore référencé. Ajoute tes PDF/images dans <span className="font-mono">public/documents</span>, puis je peux les lister ici.
+                </div>
+              ) : (
+                <ul className="space-y-3">
+                  {reportDocuments.map((doc) => (
+                    <li key={doc.href}>
+                      <a className="text-[#000091] hover:underline" href={doc.href} target="_blank" rel="noreferrer">
+                        {doc.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </section>
 
         </div>

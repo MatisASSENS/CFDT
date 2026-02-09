@@ -2,16 +2,19 @@ import React from 'react';
 
 function TechnicalDataTable() {
   const specs = [
-    { label: 'Constructeur', value: 'Best Off Aircraft' },
+    { label: 'Type', value: 'NYNJA' },
+    { label: 'Année', value: '2015' },
+    { label: 'Propriétaire / Exploitant', value: "Aéroclub d'Agen" },
+    { label: 'Base', value: 'Agen' },
+    { label: 'Motorisation', value: 'Rotax 912s' },
+    { label: 'Masse max (MTOW)', value: '470 kg' },
     { label: 'Modèle', value: 'Nynja 912' },
     { label: 'Immatriculation', value: 'F-CDST' },
     { label: 'Moteur', value: 'Rotax 912 UL (80hp)' },
     { label: 'Hélice', value: 'Duc Swirl Inconel (Tripale)' },
-    { label: 'Année de construction', value: '2015' },
     { label: 'Heures de vol totales', value: '452 h' },
     { label: 'Dernière visite (100h)', value: 'Non réalisée (Retard 52h)' },
     { label: 'Masse à vide', value: '298 kg' },
-    { label: 'MTOW', value: '472.5 kg' },
   ];
 
   return (
