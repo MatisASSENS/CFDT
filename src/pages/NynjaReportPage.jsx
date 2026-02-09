@@ -45,6 +45,10 @@ function NynjaReportPage() {
     label: 'Analyse Systèmes',
     icon: Wrench
   }, {
+    id: 'interviews',
+    label: 'Interrogatoires',
+    icon: Users
+  }, {
     id: 'factors',
     label: 'Facteurs',
     icon: BarChart
@@ -100,7 +104,58 @@ function NynjaReportPage() {
     "Problème connu d’anguille (crépine d’aspiration) / jauge essence défectueuse.",
   ];
 
-  const reportDocuments = [];
+  const interrogationDocs = {
+    hubert: {
+      label: 'Interrogatoire Hubert (DOCX)',
+      href: '/documents/Interrogatoire%20Hubert.docx',
+    },
+    monfreda: {
+      label: 'Interrogatoire Monfreda (DOCX)',
+      href: '/documents/Interrogatoire%20Monfreda.docx',
+    },
+  };
+
+  const interviewsReport = [
+    {
+      title: 'Interrogatoire Hubert',
+      doc: interrogationDocs.hubert,
+      keyPoints: [
+        "Le témoin indique que M. Monfreda parlait beaucoup de l’aéroclub auparavant, mais plus depuis octobre.",
+        "La date exacte du départ de M. Monfreda n’est pas connue du témoin; seulement que c’était avant le crash.",
+        "Le témoin évoque des plaintes générales sur des personnes, sans détails.",
+        "Le témoin ne rapporte pas de discussion directe sur le crash.",
+      ],
+    },
+    {
+      title: 'Interrogatoire Monfreda',
+      doc: interrogationDocs.monfreda,
+      keyPoints: [
+        "M. Monfreda affirme avoir quitté l’aéroclub il y a ~4 mois (avant le crash d’octobre 2025).",
+        "Il décrit des tensions et un problème de manque de formation chez la personne ayant repris la direction.",
+        "Il indique que cette personne a repris son poste et la responsabilité d’entretien des aéronefs.",
+        "Le nom « Monsieur Piola » est mentionné comme successeur (selon le document).",
+      ],
+    },
+  ];
+
+  const reportDocuments = [
+    { label: '190-03103-00_b.pdf', href: '/documents/190-03103-00_b.pdf' },
+    { label: '4X-ONA_02-05-2015.jpg', href: '/documents/4X-ONA_02-05-2015.jpg' },
+    { label: 'Données_BE2.pdf', href: '/documents/Donn%C3%A9es_BE2.pdf' },
+    { label: 'FlavienMonfreda (1).mp3', href: '/documents/FlavienMonfreda%20(1).mp3' },
+    { label: 'FlavienMonfreda.mp3', href: '/documents/FlavienMonfreda.mp3' },
+    { label: 'Interrogatoire Hubert.docx', href: interrogationDocs.hubert.href },
+    { label: 'Interrogatoire Monfreda.docx', href: interrogationDocs.monfreda.href },
+    { label: 'La Dépêche de Quatorze Heures.pdf', href: '/documents/La%20D%C3%A9p%C3%AAche%20de%20Quatorze%20Heures.pdf' },
+    { label: 'LFBA.pdf', href: '/documents/LFBA.pdf' },
+    { label: 'miac1_agen_lfba (1).pdf', href: '/documents/miac1_agen_lfba%20(1).pdf' },
+    { label: 'miac1_agen_lfba (2).pdf', href: '/documents/miac1_agen_lfba%20(2).pdf' },
+    { label: 'Rapport scéance 1.docx', href: '/documents/Rapport%20sc%C3%A9ance%201.docx' },
+    { label: 'image.png', href: '/documents/image.png' },
+    { label: 'imazdge.png', href: '/documents/imazdge.png' },
+    { label: 'imefefeage.png', href: '/documents/imefefeage.png' },
+    { label: 'imefefeage2.png', href: '/documents/imefefeage2.png' },
+  ];
   const fadeIn = {
     initial: {
       opacity: 0,
@@ -354,6 +409,46 @@ function NynjaReportPage() {
             </div>
           </section>
 
+          {/* SECTION: INTERROGATIONS */}
+          <section id="interviews" className="scroll-mt-32">
+            <div className="mb-8 pl-4 border-l-4 border-[#000091]">
+              <h2 className="text-3xl font-bold text-gray-900">Rapport - Interrogatoires</h2>
+              <p className="text-gray-500 mt-1">Synthèse basée sur les deux documents d’interrogatoire (fictif)</p>
+            </div>
+
+            <div className="grid lg:grid-cols-2 gap-6">
+              {interviewsReport.map((interview) => (
+                <div key={interview.title} className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900">{interview.title}</h3>
+                      <p className="text-sm text-gray-500 mt-1">Document source: {interview.doc.label}</p>
+                    </div>
+                    <a
+                      className="inline-flex"
+                      href={interview.doc.href}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <Button className="bg-[#000091] hover:bg-[#000091]/90 text-white">
+                        <Download size={18} className="mr-2" /> Ouvrir
+                      </Button>
+                    </a>
+                  </div>
+
+                  <div className="mt-5">
+                    <div className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Points clés</div>
+                    <ul className="text-sm text-gray-700 list-disc ml-5 space-y-2">
+                      {interview.keyPoints.map((point, idx) => (
+                        <li key={idx}>{point}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
           {/* SECTION: CONTRIBUTORY FACTORS */}
           <section id="factors" className="scroll-mt-32">
              <div className="bg-gray-900 rounded-3xl p-8 md:p-12 shadow-2xl overflow-hidden relative">
@@ -386,21 +481,15 @@ function NynjaReportPage() {
               <p className="text-gray-500 mt-1">Dossier statique: <span className="font-mono">public/documents</span></p>
             </div>
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-              {reportDocuments.length === 0 ? (
-                <div className="text-gray-600">
-                  Aucun document n’est encore référencé. Ajoute tes PDF/images dans <span className="font-mono">public/documents</span>, puis je peux les lister ici.
-                </div>
-              ) : (
-                <ul className="space-y-3">
-                  {reportDocuments.map((doc) => (
-                    <li key={doc.href}>
-                      <a className="text-[#000091] hover:underline" href={doc.href} target="_blank" rel="noreferrer">
-                        {doc.label}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              )}
+              <ul className="space-y-3">
+                {reportDocuments.map((doc) => (
+                  <li key={doc.href}>
+                    <a className="text-[#000091] hover:underline" href={doc.href} target="_blank" rel="noreferrer">
+                      {doc.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </div>
           </section>
 
