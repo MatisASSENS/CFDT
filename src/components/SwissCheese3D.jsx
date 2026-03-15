@@ -1,15 +1,35 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, extend, useFrame, useThree } from '@react-three/fiber';
-import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
-import { CanvasTexture, DoubleSide, LinearFilter, SRGBColorSpace } from 'three';
-
-extend({ RoundedBoxGeometry });
+import { CanvasTexture, DoubleSide, ExtrudeGeometry, LinearFilter, Shape, SRGBColorSpace } from 'three';
 
 const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 
+function CheeseBodyGeometry({ width, height, depth, cornerRadius = 0.45 }) {
+  const geometry = useMemo(() => {
+    const w = width / 2;
+    const h = height / 2;
+    const r = Math.min(cornerRadius, w, h);
+    const shape = new Shape();
+    shape.moveTo(-w + r, -h);
+    shape.lineTo(w - r, -h);
+    shape.quadraticCurveTo(w, -h, w, -h + r);
+    shape.lineTo(w, h - r);
+    shape.quadraticCurveTo(w, h, w - r, h);
+    shape.lineTo(-w + r, h);
+    shape.quadraticCurveTo(-w, h, -w, h - r);
+    shape.lineTo(-w, -h + r);
+    shape.quadraticCurveTo(-w, -h, -w + r, -h);
+    shape.closePath();
+    const geo = new ExtrudeGeometry(shape, { depth, bevelEnabled: false, steps: 1, curveSegments: 14 });
+    geo.translate(0, 0, -depth / 2);
+    return geo;
+  }, [width, height, depth, cornerRadius]);
+  return <primitive object={geometry} attach="geometry" />;
+}
+
 /**
  * @typedef {{ x: number, y: number, size: number }} Hole
- * @typedef {{ id: string, title: string, label: string, note: string, holes: Hole[] }} Slice
+ * @typedef {{ id: string, title: string, label: string, sublabel: string, items: string[], holes: Hole[] }} Slice
  * @typedef {{
  *   sliceWidth: number,
  *   sliceHeight: number,
@@ -25,74 +45,172 @@ const slices = [
   {
     id: 'humain',
     title: 'Facteurs humains',
-    label: 'HUMAIN',
+    label: 'FACTEURS HUMAINS',
     sublabel: '62h vol · pression · charge',
-    note: '62 h de vol / passager recent / pression / charge de travail',
+    items: [
+      'Experience limitee du pilote (62 h de vol)',
+      'Emport passager recent',
+      "Pression psychologique liee a la presence d'un proche",
+      'Charge de travail elevee en tour de piste',
+    ],
     holes: [
-      { x: 18, y: 30, size: 58 },
-      { x: 39, y: 64, size: 52 },
-      { x: 75, y: 45, size: 44 },
-      { x: 83, y: 22, size: 34 },
+      { x: 14, y: 62, size: 54 },
+      { x: 32, y: 82, size: 42 },
+      { x: 66, y: 70, size: 46 },
+      { x: 88, y: 58, size: 34 },
     ],
   },
   {
     id: 'technique',
     title: 'Facteurs techniques',
-    label: 'TECHNIQUE',
+    label: 'FACTEURS TECHNIQUES',
     sublabel: 'Jauge · masse 464 kg · marges',
-    note: 'Jauge carburant / masse ~464 kg / marges aero diminuees',
+    items: [
+      "Defaillance de l'indicateur de niveau carburant",
+      "Masse de l'ULM proche de la limite (environ 464 kg)",
+      'Performances reduites en montee et en virage',
+      'Marges aerodynamiques diminuees',
+    ],
     holes: [
-      { x: 24, y: 42, size: 54 },
-      { x: 51, y: 24, size: 46 },
-      { x: 75, y: 49, size: 46 },
-      { x: 84, y: 72, size: 40 },
+      { x: 16, y: 58, size: 50 },
+      { x: 42, y: 78, size: 40 },
+      { x: 68, y: 64, size: 44 },
+      { x: 87, y: 83, size: 34 },
     ],
   },
   {
     id: 'meteo',
     title: 'Facteurs meteorologiques',
-    label: 'METEO',
+    label: 'FACTEURS METEO',
     sublabel: 'Vent 10-20 kt · cisaillement',
-    note: '10 kt moyen / rafales 20 kt / vent variable / cisaillement',
+    items: [
+      'Vent moyen 10 kt',
+      "Rafales jusqu'a 20 kt",
+      'Direction variable 200 degres - 300 degres',
+      'Turbulence et cisaillement du vent',
+    ],
     holes: [
-      { x: 20, y: 70, size: 60 },
-      { x: 36, y: 34, size: 40 },
-      { x: 74, y: 52, size: 42 },
-      { x: 61, y: 60, size: 36 },
+      { x: 18, y: 60, size: 58 },
+      { x: 38, y: 82, size: 38 },
+      { x: 67, y: 66, size: 40 },
+      { x: 86, y: 56, size: 34 },
     ],
   },
   {
     id: 'phase-critique',
     title: 'Phase critique du vol',
     label: 'PHASE CRITIQUE',
-    sublabel: 'Virage final · vitesse limite',
-    note: 'Tours de piste / virage base-finale / vitesse proche decrochage',
+    sublabel: 'Virage basse hauteur · vitesse limite',
+    items: [
+      'Tours de piste successifs',
+      'Virage base a faible hauteur',
+      'Virage finale avec inclinaison',
+      'Vitesse proche du decrochage',
+    ],
     holes: [
-      { x: 12, y: 20, size: 42 },
-      { x: 43, y: 56, size: 44 },
-      { x: 72, y: 50, size: 40 },
-      { x: 89, y: 42, size: 30 },
+      { x: 14, y: 57, size: 40 },
+      { x: 40, y: 76, size: 42 },
+      { x: 69, y: 62, size: 38 },
+      { x: 88, y: 82, size: 30 },
+    ],
+  },
+  {
+    id: 'perte-controle',
+    title: 'Perte de controle',
+    label: 'PERTE DE CONTROLE',
+    sublabel: 'Vitesse en baisse · decrochage',
+    items: [
+      'Perte progressive de vitesse',
+      'Decrochage dissymetrique',
+      'Altitude insuffisante pour recuperation',
+    ],
+    holes: [
+      { x: 17, y: 55, size: 38 },
+      { x: 44, y: 72, size: 33 },
+      { x: 72, y: 85, size: 30 },
+      { x: 88, y: 63, size: 28 },
+    ],
+  },
+  {
+    id: 'accident',
+    title: 'Accident',
+    label: 'ACCIDENT',
+    sublabel: 'Impact a forte energie',
+    items: ['Impact a forte energie'],
+    holes: [
+      { x: 33, y: 62, size: 30 },
+      { x: 59, y: 78, size: 26 },
+      { x: 81, y: 56, size: 23 },
     ],
   },
 ];
 
 /** @type {SceneConfig} */
 const sceneConfig = {
-  sliceWidth: 5.6,
-  sliceHeight: 3.2,
-  sliceDepth: 0.34,
-  horizontalSpread: 1.18,
-  verticalSpread: 0.72,
-  depthSpread: 3.2,
+  sliceWidth: 6.8,
+  sliceHeight: 4.1,
+  sliceDepth: 0.4,
+  horizontalSpread: 2.25,
+  verticalSpread: 1.35,
+  depthSpread: 5,
 };
 
 const alignedWorldPoint = Object.freeze({ x: -0.35, y: 0.05 });
 const laserHoleRadius = 0.2;
 const zoomConfig = Object.freeze({
-  min: 6.8,
-  max: 22,
-  step: 0.012,
+  min: 0.5,
+  max: 75,
+  step: 0.03,
 });
+
+const textSafeZone = Object.freeze({
+  xMin: 8,
+  xMax: 82,
+  yMin: 6,
+  yMax: 58,
+});
+
+const isHoleInTextZone = (hole) =>
+  hole.x >= textSafeZone.xMin
+  && hole.x <= textSafeZone.xMax
+  && hole.y >= textSafeZone.yMin
+  && hole.y <= textSafeZone.yMax;
+
+const sliceOffsetPattern = Object.freeze([
+  { x: -0.64, y: 0.64 },
+  { x: 0.62, y: 0.26 },
+  { x: -0.52, y: 0.33 },
+  { x: -0.73, y: 0.40 },
+  { x: -0.58, y: 0.15 },
+  { x: 0.44, y: -0.31 },
+]);
+
+/**
+ * Place les tranches en zigzag (directions differentes) avec une amplitude limitee.
+ * Le laser reste ainsi sur le fromage au lieu de sortir du volume quand on avance en profondeur.
+ * @param {number} index
+ * @param {number} total
+ * @param {SceneConfig} config
+ */
+const getSlicePosition = (index, total, config) => {
+  const preset = sliceOffsetPattern[index];
+  if (preset) {
+    return {
+      x: preset.x * config.horizontalSpread,
+      y: preset.y * config.verticalSpread,
+      z: -index * config.depthSpread,
+    };
+  }
+
+  const offsetIndex = index - (total - 1) / 2;
+  const side = index % 2 === 0 ? -1 : 1;
+
+  return {
+    x: side * config.horizontalSpread * 0.62,
+    y: offsetIndex * config.verticalSpread * 0.2,
+    z: -index * config.depthSpread,
+  };
+};
 
 /**
  * Convertit des coordonnées en pourcentage (0-100) vers les coordonnées locales d'une tranche.
@@ -105,43 +223,87 @@ const toLocalFromPercent = (point, width, height) => ({
   y: (0.5 - point.y / 100) * height,
 });
 
-function LabelPlane({ title, sublabel, position, width, height }) {
+function LabelPlane({ title, sublabel, items, position, width, height }) {
   const texture = useMemo(() => {
     const canvas = document.createElement('canvas');
-    canvas.width = 2048;
-    canvas.height = 640;
+    canvas.width = 1660;
+    canvas.height = 1100;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return null;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = 'rgba(9, 11, 18, 0.82)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.strokeStyle = 'rgba(252, 211, 77, 0.95)';
-    ctx.lineWidth = 8;
-    ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
+    const wrapText = (text, maxWidth) => {
+      const words = text.split(' ');
+      const lines = [];
+      let current = '';
 
-    ctx.textAlign = 'center';
-    ctx.fillStyle = '#fff7cc';
+      words.forEach((word) => {
+        const candidate = current ? `${current} ${word}` : word;
+        if (!current || ctx.measureText(candidate).width <= maxWidth) {
+          current = candidate;
+          return;
+        }
+
+        lines.push(current);
+        current = word;
+      });
+
+      if (current) lines.push(current);
+      return lines;
+    };
+
+    const drawText = (text, x, y, font, fill) => {
+      ctx.font = font;
+      ctx.lineJoin = 'round';
+      ctx.lineWidth = 12;
+      ctx.strokeStyle = 'rgba(255, 247, 210, 0.96)';
+      ctx.strokeText(text, x, y);
+      ctx.fillStyle = fill;
+      ctx.fillText(text, x, y);
+    };
+
+    const wrapAndDraw = (text, startX, startY, maxWidth, lineHeight, font, fill) => {
+      const wrappedLines = wrapText(text, maxWidth);
+      wrappedLines.forEach((line, index) => {
+        drawText(line, startX, startY + index * lineHeight, font, fill);
+      });
+      return wrappedLines.length * lineHeight;
+    };
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
 
     // Title line — auto-size
-    let fontSize = 210;
-    while (fontSize > 80) {
+    let fontSize = 102;
+    while (fontSize > 60) {
       ctx.font = `900 ${fontSize}px "Segoe UI", "Arial Black", sans-serif`;
-      if (ctx.measureText(title).width <= canvas.width - 160) break;
+      if (ctx.measureText(title).width <= canvas.width - 140) break;
       fontSize -= 10;
     }
-    ctx.textBaseline = 'alphabetic';
-    const titleY = sublabel ? 270 : canvas.height / 2 + fontSize * 0.35;
-    ctx.fillText(title, canvas.width / 2, titleY);
+    const titleY = 60;
+    drawText(title, 56, titleY, `900 ${fontSize}px "Segoe UI", "Arial Black", sans-serif`, '#4f2a08');
 
     // Sublabel line
+    let currentY = titleY + fontSize + 8;
     if (sublabel) {
-      ctx.fillStyle = 'rgba(253, 230, 138, 0.85)';
-      ctx.font = `500 96px "Segoe UI", sans-serif`;
-      ctx.textBaseline = 'top';
-      ctx.fillText(sublabel, canvas.width / 2, titleY + 28);
+      drawText(sublabel, 56, currentY, '700 60px "Segoe UI", sans-serif', '#6a3c0c');
+      currentY += 78;
     }
+
+    items.forEach((item) => {
+      const usedHeight = wrapAndDraw(
+        `• ${item}`,
+        56,
+        currentY,
+        canvas.width - 120,
+        62,
+        '700 52px "Segoe UI", sans-serif',
+        '#6f4010'
+      );
+      currentY += usedHeight + 10;
+    });
 
     const map = new CanvasTexture(canvas);
     map.colorSpace = SRGBColorSpace;
@@ -150,7 +312,7 @@ function LabelPlane({ title, sublabel, position, width, height }) {
     map.magFilter = LinearFilter;
     map.needsUpdate = true;
     return map;
-  }, [title, sublabel]);
+  }, [title, sublabel, items]);
 
   useEffect(
     () => () => {
@@ -162,13 +324,15 @@ function LabelPlane({ title, sublabel, position, width, height }) {
   if (!texture) return null;
 
   return (
-    <mesh position={position} renderOrder={4}>
+    <mesh position={position} renderOrder={5}>
       <planeGeometry args={[width, height]} />
       <meshBasicMaterial
         map={texture}
         transparent
+        alphaTest={0.08}
         side={DoubleSide}
         toneMapped={false}
+        depthTest
         depthWrite={false}
       />
     </mesh>
@@ -191,14 +355,10 @@ function CheeseSlice({
   config,
   alignedWorldPoint,
 }) {
-  const offsetIndex = index - (total - 1) / 2;
-  const xOffset = offsetIndex * config.horizontalSpread;
-  const yOffset = offsetIndex * config.verticalSpread;
-  const zOffset = -index * config.depthSpread;
-  const placeLabelOnTop = index >= total - 2;
-  const labelYOffset = placeLabelOnTop
-    ? config.sliceHeight * 0.3
-    : -config.sliceHeight * 0.28;
+  const position = getSlicePosition(index, total, config);
+  const xOffset = position.x;
+  const yOffset = position.y;
+  const zOffset = position.z;
 
   const alignedLocalX = alignedWorldPoint.x - xOffset;
   const alignedLocalY = alignedWorldPoint.y - yOffset;
@@ -206,13 +366,11 @@ function CheeseSlice({
   return (
     <group position={[xOffset, yOffset, zOffset]}>
       <mesh castShadow receiveShadow>
-        <roundedBoxGeometry
-          args={[config.sliceWidth, config.sliceHeight, config.sliceDepth, 8, 0.12]}
-        />
+        <CheeseBodyGeometry width={config.sliceWidth} height={config.sliceHeight} depth={config.sliceDepth} cornerRadius={0.45} />
         <meshStandardMaterial color="#f6cf6a" roughness={0.55} metalness={0.05} />
       </mesh>
 
-      {slice.holes.map((hole, holeIndex) => {
+      {slice.holes.filter((hole) => !isHoleInTextZone(hole)).map((hole, holeIndex) => {
         const local = toLocalFromPercent(hole, config.sliceWidth, config.sliceHeight);
         const radius = (hole.size / 100) * (config.sliceHeight * 0.19);
 
@@ -256,9 +414,10 @@ function CheeseSlice({
       <LabelPlane
         title={slice.label}
         sublabel={slice.sublabel}
-        position={[0, labelYOffset, config.sliceDepth / 2 + 0.03]}
-        width={config.sliceWidth * 0.72}
-        height={0.78}
+        items={slice.items}
+        position={[-config.sliceWidth * 0.05, 0, config.sliceDepth / 2 + 0.042]}
+        width={config.sliceWidth * 0.82}
+        height={config.sliceHeight * 0.88}
       />
     </group>
   );
@@ -436,22 +595,16 @@ function CameraZoomController({ zoomZ }) {
 function SwissCheeseScene({ tilt, offset }) {
   const slicePositions = useMemo(
     () =>
-      slices.map((_, index) => {
-        const offsetIndex = index - (slices.length - 1) / 2;
-        return {
-          x: offsetIndex * sceneConfig.horizontalSpread,
-          y: offsetIndex * sceneConfig.verticalSpread,
-          z: -index * sceneConfig.depthSpread,
-        };
-      }),
+      slices.map((_, index) => getSlicePosition(index, slices.length, sceneConfig)),
     []
   );
 
+  const airplaneZ = slicePositions[0].z + sceneConfig.sliceDepth / 2 + 2.8;
   const frontZ = slicePositions[0].z + sceneConfig.sliceDepth / 2 + 0.42;
   const backZ =
     slicePositions[slicePositions.length - 1].z - sceneConfig.sliceDepth / 2 - 0.85;
-  const laserLength = frontZ - backZ;
-  const laserCenterZ = (frontZ + backZ) / 2;
+  const laserLength = airplaneZ - backZ;
+  const laserCenterZ = (airplaneZ + backZ) / 2;
 
   return (
     <>
@@ -510,7 +663,7 @@ function SwissCheeseScene({ tilt, offset }) {
           ))}
 
           <Airplane
-            position={[alignedWorldPoint.x, alignedWorldPoint.y, frontZ + 0.32]}
+            position={[alignedWorldPoint.x, alignedWorldPoint.y, airplaneZ]}
           />
 
           <Explosion
@@ -522,10 +675,10 @@ function SwissCheeseScene({ tilt, offset }) {
   );
 }
 
-function SwissCheese3D() {
+function SwissCheese3D({ className = '' }) {
   const [tilt, setTilt] = useState({ x: 0.24, y: -0.32 });
   const [offset, setOffset] = useState({ x: 0, y: 0 });
-  const [zoomZ, setZoomZ] = useState(12);
+  const [zoomZ, setZoomZ] = useState(22);
   const dragRef = useRef(null);
 
   const handleWheel = (event) => {
@@ -564,15 +717,15 @@ function SwissCheese3D() {
 
     if (drag.mode === 'rotate') {
       setTilt({
-        x: clamp(drag.initialX + dy * 0.0048, -1.05, 1.05),
-        y: drag.initialY + dx * 0.0065,
+        x: clamp(drag.initialX + dy * 0.0028, -1.05, 1.05),
+        y: drag.initialY + dx * 0.004,
       });
       return;
     }
 
     setOffset({
-      x: clamp(drag.initialOffsetX + dx * 0.015, -12, 12),
-      y: clamp(drag.initialOffsetY - dy * 0.015, -8, 8),
+      x: clamp(drag.initialOffsetX + dx * 0.02, -24, 24),
+      y: clamp(drag.initialOffsetY - dy * 0.02, -18, 18),
     });
   };
 
@@ -588,9 +741,9 @@ function SwissCheese3D() {
   };
 
   return (
-    <div className="w-full rounded-3xl border border-amber-200 bg-gradient-to-b from-[#fff8dd] via-[#ffeeb8] to-[#f6da85] p-4 md:p-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
+    <div className={`w-full h-full min-h-0 rounded-3xl border border-amber-200 bg-gradient-to-b from-[#fff8dd] via-[#ffeeb8] to-[#f6da85] p-3 md:p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] ${className}`.trim()}>
       <div
-        className="relative h-[560px] md:h-[620px] overflow-hidden rounded-2xl bg-gradient-to-br from-[#0d1b2a] via-[#1b263b] to-[#20344f] select-none"
+        className="relative h-full min-h-0 overflow-hidden rounded-2xl bg-gradient-to-br from-[#0d1b2a] via-[#1b263b] to-[#20344f] select-none"
       >
         <Canvas camera={{ position: [0, 0, 12], fov: 44 }} shadows>
           <CameraZoomController zoomZ={zoomZ} />
@@ -606,14 +759,6 @@ function SwissCheese3D() {
           onWheel={handleWheel}
           onContextMenu={(event) => event.preventDefault()}
         />
-
-        <div className="pointer-events-none absolute left-4 top-4 z-20 rounded-lg bg-black/45 px-3 py-2 text-xs font-semibold text-white/95">
-          Hazard
-        </div>
-
-        <div className="pointer-events-none absolute right-4 top-4 z-20 rounded-lg bg-red-600/85 px-3 py-2 text-xs font-semibold text-white">
-          Accident
-        </div>
 
         <div className="pointer-events-none absolute bottom-4 right-4 z-20 rounded-lg bg-black/50 px-3 py-2 text-xs text-white/95 backdrop-blur-sm">
           Clic gauche maintenu: rotation | Clic droit maintenu: translation | Molette: zoom

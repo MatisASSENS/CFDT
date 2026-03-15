@@ -28,31 +28,22 @@ function SwissCheeseModelPage() {
   return (
     <>
       <Helmet>
-        <title>Modele du Swiss Cheese - CFDT</title>
+        <title>Modele Swiss Cheese de l'accident Nynja F-CDST - CFDT</title>
         <meta
           name="description"
-          content="Visualisation 3D du modele Swiss Cheese applique a l'accident du Nynja F-CDST."
+          content="Visualisation 3D plein ecran du modele Swiss Cheese de l'accident Nynja F-CDST."
         />
       </Helmet>
 
-      <div className="pt-24 min-h-screen bg-gradient-to-b from-gray-50 to-slate-100">
-        <div className="container mx-auto px-4 max-w-6xl">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-            <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-900">V.V - Modele du Swiss Cheese (3D)</h1>
-              <p className="text-gray-600 mt-1 text-sm md:text-base">Visualisation interactive des failles alignees dans les barrieres de securite.</p>
-            </div>
-            <div className="flex gap-2">
-              <Link to="/rapport-nynja#factors">
-                <Button variant="outline">Retour aux facteurs</Button>
-              </Link>
-              <Link to="/">
-                <Button className="bg-[#000091] hover:bg-[#000091]/90 text-white">Retour au rapport</Button>
-              </Link>
-            </div>
+      <div className="pt-24 h-screen bg-gradient-to-b from-gray-50 to-slate-100">
+        <div className="h-full px-4 md:px-6 pb-4 flex flex-col gap-3">
+          <div className="flex items-center justify-end gap-3 shrink-0">
+            <Link to="/rapport-nynja#factors">
+              <Button variant="outline">Retour</Button>
+            </Link>
           </div>
 
-          <SwissCheese3D />
+          <SwissCheese3D className="flex-1 min-h-0" />
         </div>
       </div>
     </>
