@@ -1,11 +1,23 @@
 import React, { useEffect, useRef } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import Layout from '@/components/Layout';
 import NynjaReportPage from '@/pages/NynjaReportPage';
 import InterrogatoireHubertPage from '@/pages/InterrogatoireHubertPage';
 import InterrogatoireMonfredaPage from '@/pages/InterrogatoireMonfredaPage';
 import { Toaster } from '@/components/ui/toaster';
+
+function ScrollToTopOnInterrogatoireRoute() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    if (pathname.startsWith('/interrogatoire-')) {
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    }
+  }, [pathname]);
+
+  return null;
+}
 
 function App() {
   const konamiIndexRef = useRef(0);
@@ -69,6 +81,7 @@ function App() {
         <link href="https://fonts.googleapis.com/css2?family=Marianne:wght@300;400;500;700;800&display=swap" rel="stylesheet" />
       </Helmet>
       <Router>
+        <ScrollToTopOnInterrogatoireRoute />
         <Layout>
           <Routes>
             <Route path="/" element={<NynjaReportPage />} />
