@@ -14,6 +14,7 @@ import SystemsAnalysisAccordion from '@/components/SystemsAnalysisAccordion';
 import PhotoGallery from '@/components/PhotoGallery';
 import SectionNavigation from '@/components/SectionNavigation';
 import { Link } from 'react-router-dom';
+
 function NynjaReportPage() {
   const {
     toast
@@ -151,8 +152,9 @@ function NynjaReportPage() {
   ];
 
   const maintenanceNotes = [
-    "Tâches de maintenance non effectuées depuis le départ de F. MONFREDA.",
-    "Problème connu d’anguille (crépine d’aspiration) / jauge essence défectueuse.",
+    "Anomalie d'aiguille de jauge carburant constatée sur l'épave.",
+    'Câble de commande sectionné: antériorité à l\'impact non déterminée.',
+    "Impacts sur l'empennage compatibles avec un épisode de grêle signalé.",
   ];
 
   const interrogationDocs = {
@@ -211,6 +213,16 @@ function NynjaReportPage() {
     { label: 'imefefeage.png', href: withBase('documents/imefefeage.png') },
     { label: 'imefefeage2.png', href: withBase('documents/imefefeage2.png') },
   ];
+
+  const probableCauseChain = [
+    'Expérience limitée du pilote et emport passager récent.',
+    'Masse de l\'aéronef proche de la limite maximale.',
+    'Conditions météorologiques instables (rafales, convection, vent variable).',
+    'Poursuite du tour de piste malgré l\'alerte front orageux puis windshear.',
+    'Virage à basse hauteur avec réduction des marges aérodynamiques.',
+    'Décrochage dissymétrique et impact à forte énergie.',
+  ];
+
   const fadeIn = {
     initial: {
       opacity: 0,
@@ -251,7 +263,7 @@ function NynjaReportPage() {
           }} className="mb-8">
               <div className="inline-flex items-center px-4 py-2 bg-red-600/20 border border-red-500 rounded-full text-red-300 font-bold tracking-wider uppercase text-sm mb-6 backdrop-blur-sm">
                 <AlertTriangle size={16} className="mr-2" />
-                Rapport Préliminaire
+                Groupe 2T3 - CFDT
               </div>
               <h1 className="text-5xl md:text-7xl font-extrabold mb-6 leading-tight tracking-tight">
                 Rapport d'Enquête<br />
@@ -260,7 +272,7 @@ function NynjaReportPage() {
                 </span>
               </h1>
               <p className="text-xl md:text-2xl text-white/80 max-w-2xl mx-auto font-light">
-                Analyse technique de l'accident survenu le 21 Janvier 2026 à Agen (LFBA)
+                Rapport d'enquête sur l'accident de l'ULM Nynja F-CDST (26 octobre 2025, Agen LFBA)
               </p>
             </motion.div>
 
@@ -308,7 +320,7 @@ function NynjaReportPage() {
                     <div>
                       <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Contexte</h3>
                       <p className="text-gray-700 text-lg leading-relaxed">
-                        Le 21 janvier 2026, l'ULM Nynja 912 immatriculé F-CDST a subi un arrêt moteur complet en phase de montée initiale au départ de l'aérodrome d'Agen (LFBA). L'appareil a décroché à basse altitude avant d'impacter le sol.
+                        Le 26 octobre 2025 vers 16h00, l'ULM Nynja F-CDST s'est écrasé à proximité immédiate de l'aérodrome d'Agen - La Garenne (LFBA) lors d'un vol local en tours de piste. Les conditions restaient VFR mais instables, avec vent variable et rafales marquées.
                       </p>
                     </div>
                     <div>
@@ -323,18 +335,12 @@ function NynjaReportPage() {
                       <Target className="mr-2" size={20} /> Conclusions Préliminaires
                     </h3>
                     <ul className="space-y-3">
-                      <li className="flex items-start text-gray-700">
-                        <span className="bg-[#E1000F] w-2 h-2 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                        Défaillance du système d'alimentation carburant (obstruction).
-                      </li>
-                      <li className="flex items-start text-gray-700">
-                        <span className="bg-[#E1000F] w-2 h-2 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                        Maintenance critique non effectuée par le précédent propriétaire.
-                      </li>
-                      <li className="flex items-start text-gray-700">
-                        <span className="bg-[#E1000F] w-2 h-2 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                        Conditions météorologiques (rafales) aggravantes.
-                      </li>
+                      {probableCauseChain.slice(0, 3).map((item) => (
+                        <li key={item} className="flex items-start text-gray-700">
+                          <span className="bg-[#E1000F] w-2 h-2 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                          {item}
+                        </li>
+                      ))}
                     </ul>
                   </div>
                 </div>
@@ -342,7 +348,7 @@ function NynjaReportPage() {
                 <div className="mt-12 grid lg:grid-cols-3 gap-6">
                   <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
                     <h3 className="text-[#000091] font-bold mb-4 flex items-center">
-                      <Book className="mr-2" size={20} /> Constatations médico-légales (fictif)
+                      <Book className="mr-2" size={20} /> Constatations médico-légales
                     </h3>
                     <div className="grid md:grid-cols-2 gap-4">
                       {victims.map((victim) => (
@@ -379,7 +385,7 @@ function NynjaReportPage() {
 
                   <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
                     <h3 className="text-[#000091] font-bold mb-4 flex items-center">
-                      <Wrench className="mr-2" size={20} /> Maintenance (notes)
+                      <Wrench className="mr-2" size={20} /> Points techniques relevés
                     </h3>
                     <ul className="text-sm text-gray-700 list-disc ml-5 space-y-2">
                       {maintenanceNotes.map((note, idx) => (
@@ -399,7 +405,7 @@ function NynjaReportPage() {
           <section id="timeline" className="scroll-mt-32">
             <div className="mb-8 pl-4 border-l-4 border-[#E1000F]">
               <h2 className="text-3xl font-bold text-gray-900">Chronologie de l'événement</h2>
-              <p className="text-gray-500 mt-1">Reconstitution basée sur les témoignages et données radar</p>
+              <p className="text-gray-500 mt-1">Reconstitution basée sur METAR/TAF, échanges tour et témoignages</p>
             </div>
             <AccidentTimeline />
           </section>
@@ -449,7 +455,7 @@ function NynjaReportPage() {
                  <div className="bg-white rounded-2xl shadow-lg p-2 border border-gray-100">
                     <img src="https://horizons-cdn.hostinger.com/1dae807e-b36f-455e-ac88-c8703f6958e3/20-D4mkl.jpg" alt="Schéma système carburant" className="w-full h-auto rounded-xl object-cover" />
                     <div className="p-3 text-center text-sm text-gray-500 italic">
-                      Fig 1. Schéma de principe du circuit carburant Rotax 912
+                      Fig 1. Schéma générique Rotax 912 (illustratif)
                     </div>
                  </div>
                  <div className="bg-red-50 border-l-4 border-red-500 p-6 rounded-r-xl">
@@ -457,7 +463,7 @@ function NynjaReportPage() {
                      <AlertCircle size={18} className="mr-2" /> Point Critique
                    </h4>
                    <p className="text-red-700 text-sm">
-                     L'analyse a révélé une obstruction quasi-totale de la crépine d'aspiration (anguille) du réservoir principal, compatible avec l'arrêt moteur constaté.
+                     Les examens techniques n'établissent pas une panne moteur primaire certaine. L'hypothèse dominante reste une perte de contrôle à basse hauteur, aggravée par les conditions aérologiques et des facteurs humains.
                    </p>
                  </div>
               </div>
@@ -468,7 +474,7 @@ function NynjaReportPage() {
           <section id="interviews" className="scroll-mt-32">
             <div className="mb-8 pl-4 border-l-4 border-[#000091]">
               <h2 className="text-3xl font-bold text-gray-900">Rapport - Interrogatoires</h2>
-              <p className="text-gray-500 mt-1">Synthèse basée sur les deux documents d’interrogatoire (fictif)</p>
+              <p className="text-gray-500 mt-1">Synthèse basée sur les deux documents d'interrogatoire disponibles</p>
             </div>
 
             <div className="grid lg:grid-cols-2 gap-6">
@@ -528,10 +534,17 @@ function NynjaReportPage() {
                  <div className="mb-12 text-center">
                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Facteurs Contributifs</h2>
                    <p className="text-gray-400 max-w-2xl mx-auto">
-                     Représentation visuelle de la chaîne d'événements ayant mené à l'accident (Modèle de Reason).
+                     Représentation visuelle de la chaîne d'événements menant au décrochage dissymétrique (modèle Swiss Cheese / Reason).
                    </p>
                  </div>
                  <ContributoryFactorsDiagram />
+                 <div className="mt-8 text-center">
+                   <Link to="/modele-swiss-cheese">
+                     <Button variant="outline" className="border-white text-white hover:bg-white hover:text-gray-900">
+                       Voir le modele Swiss Cheese 3D
+                     </Button>
+                   </Link>
+                 </div>
                </div>
              </div>
           </section>

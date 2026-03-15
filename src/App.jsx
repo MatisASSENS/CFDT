@@ -5,13 +5,14 @@ import Layout from '@/components/Layout';
 import NynjaReportPage from '@/pages/NynjaReportPage';
 import InterrogatoireHubertPage from '@/pages/InterrogatoireHubertPage';
 import InterrogatoireMonfredaPage from '@/pages/InterrogatoireMonfredaPage';
+import SwissCheeseModelPage from '@/pages/SwissCheeseModelPage';
 import { Toaster } from '@/components/ui/toaster';
 
 function ScrollToTopOnInterrogatoireRoute() {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    if (pathname.startsWith('/interrogatoire-')) {
+    if (pathname.startsWith('/interrogatoire-') || pathname === '/modele-swiss-cheese') {
       window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
     }
   }, [pathname]);
@@ -88,6 +89,7 @@ function App() {
             <Route path="/rapport-nynja" element={<NynjaReportPage />} />
             <Route path="/interrogatoire-hubert" element={<InterrogatoireHubertPage />} />
             <Route path="/interrogatoire-monfreda" element={<InterrogatoireMonfredaPage />} />
+            <Route path="/modele-swiss-cheese" element={<SwissCheeseModelPage />} />
           </Routes>
         </Layout>
         <Toaster />

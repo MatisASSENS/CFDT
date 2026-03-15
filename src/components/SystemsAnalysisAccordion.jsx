@@ -17,13 +17,13 @@ function SystemsAnalysisAccordion() {
               <Droplet size={20} />
             </div>
             <div>
-              <span className="font-bold text-gray-900 block">Circuit Carburant</span>
-              <span className="text-sm text-[#E1000F] font-medium">Défaillance Critique Identifiée</span>
+              <span className="font-bold text-gray-900 block">Instrumentation / Carburant</span>
+              <span className="text-sm text-[#E1000F] font-medium">Anomalie observée sur jauge</span>
             </div>
           </div>
         </AccordionTrigger>
         <AccordionContent className="text-gray-600 pb-4 pl-[3.5rem]">
-          L'examen de l'épave a révélé une obstruction majeure de la crépine d'aspiration (anguille) dans le réservoir principal. Des dépôts solides et gélatineux ont réduit le débit de carburant de 90%. Les durites présentaient également des signes de vieillissement avancé (craquelures).
+          L'examen de l'épave mentionne une anomalie de l'aiguille de jauge carburant. Aucune panne sèche n'est formellement établie, mais une indication erronée a pu augmenter la charge mentale du pilote et perturber la gestion de l'énergie en circuit.
         </AccordionContent>
       </AccordionItem>
 
@@ -35,12 +35,12 @@ function SystemsAnalysisAccordion() {
             </div>
             <div>
               <span className="font-bold text-gray-900 block">Groupe Motopropulseur</span>
-              <span className="text-sm text-green-600">Fonctionnement nominal avant panne</span>
+              <span className="text-sm text-green-600">Pas de panne primaire démontrée</span>
             </div>
           </div>
         </AccordionTrigger>
         <AccordionContent className="text-gray-600 pb-4 pl-[3.5rem]">
-          Le moteur Rotax 912 n'a montré aucune trace de serrage ou de rupture mécanique interne. Les bougies présentaient un aspect normal. L'analyse de l'huile n'a révélé aucune limaille anormale. L'arrêt est confirmé comme étant d'origine externe (alimentation).
+          Les éléments disponibles ne permettent pas de retenir une défaillance moteur primaire comme cause directe. Une perte partielle de puissance reste évoquée dans les hypothèses, sans preuve technique formelle avant impact.
         </AccordionContent>
       </AccordionItem>
 
@@ -51,13 +51,13 @@ function SystemsAnalysisAccordion() {
               <Zap size={20} />
             </div>
             <div>
-              <span className="font-bold text-gray-900 block">Circuit Électrique</span>
-              <span className="text-sm text-gray-500">Pas d'anomalie</span>
+              <span className="font-bold text-gray-900 block">Masse et centrage</span>
+              <span className="text-sm text-gray-500">Marge réduite</span>
             </div>
           </div>
         </AccordionTrigger>
         <AccordionContent className="text-gray-600 pb-4 pl-[3.5rem]">
-          Les boîtiers d'allumage électronique (CDI) ont été testés et fonctionnaient correctement. Le faisceau électrique était intègre avant l'impact. La batterie était chargée.
+          La masse estimée au décollage est de 464 kg (284 + 70 + 68 + 42), proche de la limite opérationnelle mentionnée. Cette configuration réduit les performances en virage et augmente la vitesse de décrochage.
         </AccordionContent>
       </AccordionItem>
 
@@ -69,12 +69,12 @@ function SystemsAnalysisAccordion() {
             </div>
             <div>
               <span className="font-bold text-gray-900 block">Commandes de Vol</span>
-              <span className="text-sm text-gray-500">Continuité établie</span>
+              <span className="text-sm text-gray-500">Rupture de câble à expertiser</span>
             </div>
           </div>
         </AccordionTrigger>
         <AccordionContent className="text-gray-600 pb-4 pl-[3.5rem]">
-          La continuité des câbles de commande a été vérifiée pour les trois axes (profondeur, ailerons, direction). Aucune rupture antérieure à l'impact n'a été décelée.
+          Un câble de commande sectionné a été identifié sur l'épave. Le caractère antérieur ou post-impact de la rupture n'est pas établi et nécessite une expertise métallurgique complémentaire.
         </AccordionContent>
       </AccordionItem>
     </Accordion>

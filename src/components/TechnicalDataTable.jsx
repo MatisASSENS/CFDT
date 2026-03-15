@@ -6,15 +6,17 @@ function TechnicalDataTable() {
     { label: 'Année', value: '2015' },
     { label: 'Propriétaire / Exploitant', value: "Aéroclub d'Agen" },
     { label: 'Base', value: 'Agen' },
-    { label: 'Motorisation', value: 'Rotax 912s' },
-    { label: 'Masse max (MTOW)', value: '470 kg' },
-    { label: 'Modèle', value: 'Nynja 912' },
+    { label: 'Motorisation', value: 'Rotax 912S' },
+    { label: 'Masse max (MTOW)', value: '470 kg (réf. enquête initiale)' },
+    { label: 'Masse max (autre source)', value: '472.5 kg (calcul masse/centrage)' },
+    { label: 'Modèle', value: 'Best Off Nynja' },
     { label: 'Immatriculation', value: 'F-CDST' },
-    { label: 'Moteur', value: 'Rotax 912 UL (80hp)' },
-    { label: 'Hélice', value: 'Duc Swirl Inconel (Tripale)' },
-    { label: 'Heures de vol totales', value: '452 h' },
-    { label: 'Dernière visite (100h)', value: 'Non réalisée (Retard 52h)' },
-    { label: 'Masse à vide', value: '298 kg' },
+    { label: 'Masse à vide', value: '284 kg' },
+    { label: 'Pilote', value: 'Jean Dupotager - 70 kg - 62 h' },
+    { label: 'Passager', value: 'Alexandre Lamitie - 68 kg - 45 h' },
+    { label: 'Carburant embarqué (max)', value: '60 L (~42 kg)' },
+    { label: 'Masse estimée au décollage', value: '464 kg' },
+    { label: 'Configuration du vol', value: 'Vol local en tours de piste' },
   ];
 
   return (
@@ -31,7 +33,7 @@ function TechnicalDataTable() {
             {specs.map((spec, index) => (
               <tr key={index} className="hover:bg-gray-50 transition-colors">
                 <td className="px-6 py-4 font-medium text-gray-900">{spec.label}</td>
-                <td className={`px-6 py-4 text-gray-600 font-mono ${spec.label.includes('Dernière visite') ? 'text-[#E1000F] font-bold' : ''}`}>
+                <td className={`px-6 py-4 text-gray-600 font-mono ${spec.label.includes('Masse estimée') ? 'text-[#E1000F] font-bold' : ''}`}>
                   {spec.value}
                 </td>
               </tr>

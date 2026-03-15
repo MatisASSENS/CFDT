@@ -1,46 +1,46 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Clock, AlertTriangle, Play, Pause } from 'lucide-react';
+import { ChevronDown, Clock, AlertTriangle } from 'lucide-react';
 
 function AccidentTimeline() {
   const [expandedId, setExpandedId] = useState(null);
 
   const events = [
     {
-      time: '14:05',
-      title: 'Mise en route',
+      time: '14:30 UTC',
+      title: 'Conditions observées (METAR LFBA)',
       type: 'normal',
-      description: 'Démarrage du moteur Rotax 912 sans anomalie signalée. Essais magnétos effectués au point d\'arrêt.'
+      description: 'Vent 250° 10 kt avec rafales à 20 kt, direction variable et présence de TCU: environnement VFR légal mais instable pour un circuit ULM.'
     },
     {
-      time: '14:12',
-      title: 'Décollage Piste 25',
+      time: '15:30 - 15:50',
+      title: 'Tours de piste en cours à LFBA',
       type: 'normal',
-      description: 'Alignement et mise en puissance. Accélération et rotation conformes. Vent 250° 10kt rafales 20kt.'
+      description: 'L\'équipage poursuit les évolutions locales malgré une dégradation progressive de l\'environnement aérologique.'
     },
     {
-      time: '14:13:05',
-      title: 'Montée Initiale',
-      type: 'normal',
-      description: 'Passage 300ft sol. Vitesse stabilisée 110 km/h.'
+      time: '15:52',
+      title: 'Alerte front orageux (tour)',
+      type: 'warning',
+      description: 'La tour signale l\'arrivée d\'un front orageux au nord-ouest et questionne l\'équipage sur la poursuite des tours de piste.'
     },
     {
-      time: '14:13:20',
-      title: 'Arrêt Moteur',
+      time: '15:58',
+      title: 'Signalement windshear',
+      type: 'warning',
+      description: 'Un windshear est reporté sur la plateforme. Le pilote annonce en radio: "beaucoup de vent" et "ça turbule vraiment fort".'
+    },
+    {
+      time: 'vers 16:00',
+      title: 'Perte de contrôle à basse hauteur',
       type: 'critical',
-      description: 'Coupure nette du moteur. Bruit caractéristique d\'étouffement rapporté par témoins au sol.'
+      description: 'En phase de virage de circuit, la marge aérodynamique se dégrade. Le scénario retenu est un décrochage dissymétrique non récupérable à cette altitude.'
     },
     {
-      time: '14:13:25',
-      title: 'Perte de Contrôle',
-      type: 'critical',
-      description: 'Tentative de virage à gauche (demi-tour). Inclinaison excessive à basse vitesse. Décrochage asymétrique.'
-    },
-    {
-      time: '14:13:32',
+      time: '16:00+',
       title: 'Impact',
       type: 'critical',
-      description: 'Impact violent avec le sol dans un champ à 400m du seuil de piste.'
+      description: 'L\'ULM impacte violemment le sol près de l\'aérodrome d\'Agen - La Garenne. Les deux occupants décèdent sur place.'
     }
   ];
 
@@ -55,6 +55,21 @@ function AccidentTimeline() {
 
       <div className="space-y-6">
         {events.map((event, index) => (
+          (() => {
+            const isCritical = event.type === 'critical';
+            const isWarning = event.type === 'warning';
+            const badgeClass = isCritical
+              ? 'bg-red-50 text-red-600'
+              : isWarning
+                ? 'bg-amber-50 text-amber-700'
+                : 'bg-blue-50 text-blue-600';
+            const dotClass = isCritical
+              ? 'bg-[#E1000F] text-white'
+              : isWarning
+                ? 'bg-amber-500 text-white'
+                : 'bg-[#003366] text-white';
+
+            return (
           <motion.div 
             key={index}
             initial={{ opacity: 0, x: -20 }}
@@ -67,10 +82,10 @@ function AccidentTimeline() {
             {/* Timeline Dot */}
             <div className={`
               absolute left-0 w-14 h-14 rounded-full flex items-center justify-center z-10 border-4 border-white shadow-md transition-colors duration-300
-              ${event.type === 'critical' ? 'bg-[#E1000F] text-white' : 'bg-[#003366] text-white'}
+              ${dotClass}
               ${expandedId === index ? 'scale-110' : 'scale-100'}
             `}>
-              {event.type === 'critical' ? <AlertTriangle size={20} /> : <Clock size={20} />}
+              {isCritical || isWarning ? <AlertTriangle size={20} /> : <Clock size={20} />}
             </div>
 
             {/* Content Card */}
@@ -80,10 +95,10 @@ function AccidentTimeline() {
             `}>
               <div className="flex justify-between items-center">
                 <div className="flex items-center space-x-3">
-                  <span className={`font-mono font-bold px-2 py-1 rounded text-sm ${event.type === 'critical' ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-600'}`}>
+                  <span className={`font-mono font-bold px-2 py-1 rounded text-sm ${badgeClass}`}>
                     {event.time}
                   </span>
-                  <h3 className={`font-bold text-lg ${event.type === 'critical' ? 'text-gray-900' : 'text-gray-700'}`}>
+                  <h3 className={`font-bold text-lg ${isCritical ? 'text-gray-900' : 'text-gray-700'}`}>
                     {event.title}
                   </h3>
                 </div>
@@ -109,6 +124,8 @@ function AccidentTimeline() {
               </AnimatePresence>
             </div>
           </motion.div>
+            );
+          })()
         ))}
       </div>
     </div>

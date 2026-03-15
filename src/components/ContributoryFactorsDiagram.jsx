@@ -5,19 +5,19 @@ import { ArrowRight } from 'lucide-react';
 function ContributoryFactorsDiagram() {
   const steps = [
     {
-      title: "Conditions Latentes",
+      title: "Barrières Latentes",
       color: "bg-orange-500",
-      items: ["Défaut de maintenance", "Vieillissement circuit essence"]
+      items: ["Expérience limitée", "Emport passager récent", "Masse proche limite"]
     },
     {
-      title: "Déclencheurs",
+      title: "Déclencheurs Opérationnels",
       color: "bg-red-500",
-      items: ["Obstruction carburant", "Vent turbulent (20kt)"]
+      items: ["Rafales + vent variable", "Annonce front orageux", "Signalement windshear"]
     },
     {
       title: "Conséquences",
       color: "bg-gray-800",
-      items: ["Arrêt moteur 300ft", "Perte de contrôle"]
+      items: ["Marge aérodynamique réduite", "Décrochage dissymétrique", "Impact à forte énergie"]
     }
   ];
 
