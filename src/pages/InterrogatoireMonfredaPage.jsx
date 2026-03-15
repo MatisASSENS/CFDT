@@ -13,6 +13,7 @@ function InterrogatoireMonfredaPage() {
 
   const sourceDocHref = withBase('documents/Interrogatoire%20Monfreda.docx');
   const photoHref = withBase('documents/Monfredat.jpeg');
+  const backgroundHref = withBase('documents/IMG_20260315_152326_410.jpg');
 
   const transcript = `Interrogatoire - Flavien Monfreda - Aéroclub d'Agen
 
@@ -100,35 +101,43 @@ Cet interrogatoire établit un lien entre le départ de Monsieur Monfreda et l'a
         <meta name="description" content="Interrogatoire complet (fictif) - Flavien Monfreda, Aéroclub d'Agen." />
       </Helmet>
 
-      <div className="pt-24 min-h-screen bg-gray-50">
-        <div className="container mx-auto px-4 max-w-4xl">
+      <div className="pt-24 min-h-screen relative">
+        <div className="fixed inset-0 bg-[#0b0b0b]" aria-hidden="true" />
+        <div
+          className="fixed inset-0 bg-no-repeat bg-center bg-contain opacity-50 pointer-events-none"
+          style={{ backgroundImage: `url(${backgroundHref})` }}
+          aria-hidden="true"
+        />
+        <div className="fixed inset-0 bg-black/45 pointer-events-none" aria-hidden="true" />
+
+        <div className="relative container mx-auto px-4 max-w-4xl pb-10">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-            <h1 className="text-3xl font-bold text-gray-900">Interrogatoire Flavien Monfreda</h1>
+            <h1 className="text-3xl font-bold text-white">Interrogatoire Flavien Monfreda</h1>
             <div className="flex gap-2">
               <a href={sourceDocHref} target="_blank" rel="noreferrer">
                 <Button className="bg-[#000091] hover:bg-[#000091]/90 text-white">Ouvrir le DOCX</Button>
               </a>
               <Link to="/">
-                <Button variant="outline">Retour au rapport</Button>
+                <Button variant="outline" className="border-white bg-white text-gray-900 hover:bg-white/85 hover:text-gray-900 font-semibold">Retour au rapport</Button>
               </Link>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-6">
+          <div className="bg-black/60 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-6 mb-6">
             <div className="flex items-center gap-4">
               <div className="w-20 h-20 rounded-2xl overflow-hidden border border-gray-200 bg-gray-100 flex-shrink-0">
                 <img src={photoHref} alt="Photo Flavien Monfreda" className="w-full h-full object-cover" loading="lazy" />
               </div>
-              <div className="text-gray-600">
-                <div className="font-semibold text-gray-900">Photo - personne interrogée</div>
-                <div className="text-sm">Fichier: Monfredat.jpeg</div>
+              <div className="text-white/90">
+                <div className="font-semibold text-white">Photo - personne interrogée</div>
+                <div className="text-sm text-white/75">Fichier: Monfredat.jpeg</div>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-            <div className="text-sm text-gray-500 mb-4">Affichage intégral (texte). Source: Interrogatoire Monfreda.docx</div>
-            <div className="whitespace-pre-wrap text-gray-800 leading-relaxed">
+          <div className="bg-black/60 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 p-6">
+            <div className="text-sm text-white/75 mb-4">Affichage intégral (texte). Source: Interrogatoire Monfreda.docx</div>
+            <div className="whitespace-pre-wrap text-white/95 leading-relaxed">
               {transcript}
             </div>
           </div>
