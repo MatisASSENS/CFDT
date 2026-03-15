@@ -278,6 +278,150 @@ function RotatingGroup({ tilt, children }) {
   return <group ref={groupRef}>{children}</group>;
 }
 
+// ─── Avion ────────────────────────────────────────────────────────────────────
+function Airplane({ position }) {
+  return (
+    <group position={position} rotation={[0, Math.PI, 0]}>
+      {/* Fuselage — capsule sur l'axe Z (longueur) */}
+      <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <capsuleGeometry args={[0.07, 0.7, 6, 12]} />
+        <meshStandardMaterial color="#e0e8f0" roughness={0.35} metalness={0.3} />
+      </mesh>
+
+      {/* Ailes principales */}
+      <mesh position={[0, 0, 0.05]}>
+        <boxGeometry args={[1.3, 0.03, 0.26]} />
+        <meshStandardMaterial color="#c8d6e8" roughness={0.38} metalness={0.28} />
+      </mesh>
+
+      {/* Empennage horizontal */}
+      <mesh position={[0, 0, -0.38]}>
+        <boxGeometry args={[0.52, 0.025, 0.14]} />
+        <meshStandardMaterial color="#bfcfdf" roughness={0.4} metalness={0.25} />
+      </mesh>
+
+      {/* Dérive verticale */}
+      <mesh position={[0, 0.15, -0.34]}>
+        <boxGeometry args={[0.025, 0.28, 0.18]} />
+        <meshStandardMaterial color="#94a3b8" roughness={0.4} metalness={0.25} />
+      </mesh>
+    </group>
+  );
+}
+
+// Nombre de sphères en expansion dans l'explosion
+const WAVE_COUNT = 5;
+const WAVE_COLORS = ['#ffffff', '#ffe566', '#f97316', '#ef4444', '#991b1b'];
+const WAVE_PERIODS = [1.1, 1.4, 1.8, 2.3, 2.9]; // durée de cycle de chaque sphère (s)
+const WAVE_MAX_SCALE = [3.2, 4.5, 5.8, 7.0, 8.5];
+const WAVE_PHASE_OFFSET = [0, 0.18, 0.36, 0.55, 0.72]; // décalage de phase
+const WAVE_EI = [9, 6, 4, 2.5, 1.5];
+
+function ExplosionWave({ color, period, maxScale, phaseOffset, emissiveIntensity }) {
+  const meshRef = useRef(null);
+  const t = useRef(phaseOffset * period);
+
+  useFrame((_, delta) => {
+    t.current = (t.current + delta) % period;
+    const p = t.current / period; // 0 → 1
+    if (!meshRef.current) return;
+    meshRef.current.scale.setScalar(1 + p * (maxScale - 1));
+    meshRef.current.material.opacity = Math.pow(1 - p, 1.4) * 0.65;
+  });
+
+  return (
+    <mesh ref={meshRef}>
+      <sphereGeometry args={[0.3, 20, 20]} />
+      <meshStandardMaterial
+        color={color}
+        emissive={color}
+        emissiveIntensity={emissiveIntensity}
+        toneMapped={false}
+        transparent
+        opacity={0.65}
+        depthWrite={false}
+        wireframe={false}
+      />
+    </mesh>
+  );
+}
+
+function Explosion({ position }) {
+  const coreRef = useRef(null);
+  const t = useRef(0);
+
+  const sparks = useMemo(() => {
+    return Array.from({ length: 32 }, (_, i) => {
+      const seed = (n) => {
+        const x = Math.sin(i * 127.3 + n * 43.7) * 10000;
+        return x - Math.floor(x);
+      };
+      const theta = seed(1) * Math.PI * 2;
+      const phi = seed(2) * Math.PI;
+      const r = 0.25 + seed(3) * 1.1;
+      return {
+        pos: [
+          r * Math.sin(phi) * Math.cos(theta),
+          r * Math.sin(phi) * Math.sin(theta),
+          r * Math.cos(phi),
+        ],
+        size: 0.025 + seed(4) * 0.07,
+        color: ['#ef4444', '#f97316', '#fbbf24', '#ff6600', '#fff176'][Math.floor(seed(5) * 5)],
+        ei: 3.0 + seed(6) * 4.0,
+        phase: seed(7) * Math.PI * 2,
+      };
+    });
+  }, []);
+
+  useFrame((_, delta) => {
+    t.current += delta;
+    if (coreRef.current) {
+      const pulse = 0.78 + Math.sin(t.current * 7.5) * 0.26;
+      coreRef.current.scale.setScalar(pulse);
+    }
+  });
+
+  return (
+    <group position={position}>
+      {/* Sphères de souffle en expansion */}
+      {Array.from({ length: WAVE_COUNT }, (_, i) => (
+        <ExplosionWave
+          key={i}
+          color={WAVE_COLORS[i]}
+          period={WAVE_PERIODS[i]}
+          maxScale={WAVE_MAX_SCALE[i]}
+          phaseOffset={WAVE_PHASE_OFFSET[i]}
+          emissiveIntensity={WAVE_EI[i]}
+        />
+      ))}
+
+      {/* Noyau central */}
+      <mesh ref={coreRef}>
+        <sphereGeometry args={[0.22, 18, 18]} />
+        <meshStandardMaterial
+          color="#fffde7"
+          emissive="#ff5500"
+          emissiveIntensity={10}
+          toneMapped={false}
+        />
+      </mesh>
+
+      {/* Éclats */}
+      {sparks.map((s, i) => (
+        <mesh key={i} position={s.pos}>
+          <sphereGeometry args={[s.size, 6, 6]} />
+          <meshStandardMaterial
+            color={s.color}
+            emissive={s.color}
+            emissiveIntensity={s.ei}
+            toneMapped={false}
+          />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
 function CameraZoomController({ zoomZ }) {
   const { camera } = useThree();
 
@@ -373,20 +517,13 @@ function SwissCheeseScene({ tilt, offset }) {
             </mesh>
           ))}
 
-          <mesh position={[alignedWorldPoint.x, alignedWorldPoint.y, frontZ + 0.26]}>
-            <boxGeometry args={[0.64, 0.2, 0.1]} />
-            <meshStandardMaterial color="#f97316" roughness={0.42} />
-          </mesh>
+          <Airplane
+            position={[alignedWorldPoint.x, alignedWorldPoint.y, frontZ + 0.32]}
+          />
 
-          <mesh position={[alignedWorldPoint.x, alignedWorldPoint.y, backZ - 0.18]} rotation={[Math.PI, 0, 0]}>
-            <coneGeometry args={[0.08, 0.22, 16]} />
-            <meshStandardMaterial color="#ef4444" emissive="#ef4444" emissiveIntensity={0.9} />
-          </mesh>
-
-          <mesh position={[alignedWorldPoint.x + 0.32, alignedWorldPoint.y, backZ - 0.26]}>
-            <boxGeometry args={[0.7, 0.22, 0.1]} />
-            <meshStandardMaterial color="#dc2626" roughness={0.4} />
-          </mesh>
+          <Explosion
+            position={[alignedWorldPoint.x, alignedWorldPoint.y, backZ - 0.25]}
+          />
         </RotatingGroup>
       </group>
     </>
@@ -442,8 +579,8 @@ function SwissCheese3D() {
     }
 
     setOffset({
-      x: clamp(drag.initialOffsetX + dx * 0.01, -2.8, 2.8),
-      y: clamp(drag.initialOffsetY - dy * 0.01, -2.2, 2.2),
+      x: clamp(drag.initialOffsetX + dx * 0.015, -12, 12),
+      y: clamp(drag.initialOffsetY - dy * 0.015, -8, 8),
     });
   };
 
