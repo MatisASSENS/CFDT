@@ -495,14 +495,6 @@ function SwissCheeseScene({ tilt, offset }) {
             />
           </mesh>
 
-          <LabelPlane
-            title="LASER"
-            sublabel="Trajectoire de danger"
-            position={[alignedWorldPoint.x, alignedWorldPoint.y + 0.52, laserCenterZ + 0.15]}
-            width={2.5}
-            height={0.72}
-          />
-
           {slicePositions.map((point, index) => (
             <mesh
               key={`laser-point-${index}`}
